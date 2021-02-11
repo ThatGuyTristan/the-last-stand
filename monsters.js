@@ -1,0 +1,7 @@
+var monsters_list = [
+	{ name: "archer", room: 1, total: 10, current: 10, attack: 1, accuracy: .3, loot: 1, alive:true, place:0,healthyimg:"archer_healthy.png",woundedimg:"archer_wounded.png",badlywoundedimg:"archer_badlywounded.png",neardeathimg:"archer_neardeath.png",deadimg:"archer_dead.png" },
+	{ name: "swordsman", room: 2, total: 20, current: 20, attack:1,accuracy:.4, loot: 2, alive:true, place:0,healthyimg:"swordsman_healthy.png",woundedimg:"swordsman_wounded.png",badlywoundedimg:"swordsman_badlywounded.png",neardeathimg:"swordsman_neardeath.png",deadimg:"swordsman_dead.png"  },
+	{ name: "spearman",	room: 1, total: 25,	current: 25, attack: 1,	accuracy: .3,loot: 3, alive:true, place:0, healthyimg:"spearman_healthy.png",woundedimg:"spearman_wounded.png",badlywoundedimg:"spearman_badlywounded.png",neardeathimg:"spearman_neardeath.png",deadimg:"spearman_dead.png" },
+	{ name: "sergeant",	room: 1,total: 35, current: 35, attack: 1, accuracy: .3, loot: 4, alive:true, place:0, healthyimg:"sergeant_healthy.png",woundedimg:"sergeant_wounded.png",badlywoundedimg:"sergeant_badlywounded.png",neardeathimg:"sergeant_neardeath.png",deadimg:"sergeant_dead.png"},
+	{ name: "knight", room:5, total:30, current:30, attack:2, accuracy:.15, loot:5, alive:true, place:0, healthyimg:"knight_healthy.png",woundedimg:"knight_wounded.png",badlywoundedimg:"knight_badlywounded.png",neardeathimg:"knight_neardeath.png",deadimg:"knight_dead.png"}
+]

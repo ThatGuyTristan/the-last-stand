@@ -1,5 +1,4 @@
-# the-last-stand
+# battlefield_sim-b-
+recreating the original repository because i uploaded outdated files in the original one. 
 
-This is a very simple browser game made with base javascript, some jQuery, html, and css.
-
-To play, simply download the repository and open the index.html file.
+In hindsight, it may have been neater to just empty the old repository and upload the more recent files.
