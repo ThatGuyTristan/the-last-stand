@@ -1,0 +1,89 @@
+#whole{
+	width: 100%;
+}
+
+#main{
+	width:800px;
+	height:600px;
+	position:center;
+	margin-right:25%;
+	margin-left:25%;
+	/* border: black 1px dotted;
+		*/
+}
+
+button{
+	border:none;
+}
+
+#playerbox{
+background-color: transparent;
+border:grey 3px solid; 
+border-style:inset;
+width:150px;
+height:300px;
+margin:10px 10px 10px 10px ;
+position:fixed;
+float:left;
+}
+
+#centerbox{
+background-color: grey;
+border:black 3px solid; 
+border-style:inset;
+width:450px;
+height:300px;
+margin:10px 10px 10px 170px ;
+position:fixed;
+float:left;
+}
+
+#weaponselection{
+	margin:10px 45px 0px 45px;
+	float:center;
+}
+
+#combatlog{
+	width:450px;
+	height:145px;
+	margin-top: 155px;
+	border: 1px black solid;
+	position:fixed;
+	overflow:auto;
+}
+
+#monstersbox{
+color:red;
+background-color: transparent;
+border:grey 3px solid; 
+border-style:outset;
+width:150px;
+height:300px;
+margin:10px 10px 10px 635px ;
+position:fixed;
+}
+
+.monsterholder {
+margin:auto;
+padding-left:35px;
+}
+
+#lowerbox{
+color:red;
+background-color: transparent;
+border:black 3px dashed; 
+border-style:outset;
+width: 780px;
+height: 200px;
+position:fixed;
+margin:330px 10px 100px 10px;
+}
+
+.enemyattacksuccess{
+	color:red;
+}
+
+
+.death{
+	font-weight:bold;
+}

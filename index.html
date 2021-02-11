@@ -1,0 +1,46 @@
+<!DOCTYPE html charset="UTF-8">
+<html lang=en>
+<head>
+    <script src="jquery-3.3.1.min.js"></script>
+    <script src="workings.js"></script>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+    <div id=whole>
+        <div id="main"> 
+            <div id="playerbox">
+                <p> Score:  <span id="playerscore"> </span> </p>
+                <p> Health: <span id="playerhealth"> </span> </p>
+                <p> Critical %: <span id="playercrit">  </span> </p>
+                <p> Dodge %:<span id="playerdodge"></span></p>
+                <p> Weapon: <span id="playerweapon"> </span> </p>
+                <p> Stance: <span id="playerstance"></span></p>
+                <div id="playerbuttons">
+                    <p id="stanceselect"> </p>
+                    <p> <span id="playerbreather"></span></p>
+                </div>
+            </div>
+            <div class="wrapper scrollbar-dynamic" id="centerbox">
+                <div id="weaponselection"></div>
+                <div id="topcenterbox"></div>
+                <div id="combatlog">
+                    <p id="topbutton"> 
+                    <button id="startroom" type="button" onclick=roomstart()> Start </button>
+                </div>
+            </div>
+            <div id="monstersbox">
+                <p class='monsterholder' id="m0"></p>
+                <p class='monsterholder' id="m1"></p>
+                <p class='monsterholder' id="m2"></p>
+            </div>
+            <div id="here">
+                <p id="buttonrow"> </p>
+            </div>
+
+            <div id="inventorydiv">
+                <p><span id="inventory"></span> </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
