@@ -1,4 +1,25 @@
-let crit, dmg, room = 1, score = 0, monsters_array = [], monsters_count = 0, place = 1, player_has_stance = playerCharacter.stance;
+let crit, dmg, room = 1, score = 0, monsters_array = [], monsters_count = 0, place = 1;
+
+const armory = [
+	{ name:"Greatsword", verb:"slash", missverb:"swing", url: "images/greatsword.png", value: 0, damage: 7, crit: .3, helptext: "High damage, low critical"},
+	{ name:"Warhammer", verb:"crush", missverb: "swipe", value: 1, url: "images/warhammer.png", damage: 5, crit: .5, helptext: "A balanced weapon" },
+	{ name:"Axe", verb:"chop", missverb: "hack",value: 2, url: "images/axe.png", damage: 3, crit: .7, helptext: "Low damage, high critical" }
+]
+
+const stances = [
+	{ name: "steady", dodge: .2, crit: .2 },
+	{ name: "defensive", dodge:.3, crit: .1 },
+	{ name: "offensive", dodge: .1, crit: .3 },
+	{ name: "reckless", dodge:0, crit: .4 }
+]
+
+var monstersList = [
+	{ name: "archer", room: 1, total: 10, current: 10, attack: 1, accuracy: .3, loot: 1, alive:true, place:0,healthyimg:"archer_healthy.png",woundedimg:"archer_wounded.png",badlywoundedimg:"archer_badlywounded.png",neardeathimg:"archer_neardeath.png",deadimg:"archer_dead.png" },
+	{ name: "swordsman", room: 2, total: 20, current: 20, attack:1,accuracy:.4, loot: 2, alive:true, place:0,healthyimg:"swordsman_healthy.png",woundedimg:"swordsman_wounded.png",badlywoundedimg:"swordsman_badlywounded.png",neardeathimg:"swordsman_neardeath.png",deadimg:"swordsman_dead.png"  },
+	{ name: "spearman",	room: 1, total: 25,	current: 25, attack: 1,	accuracy: .3,loot: 3, alive:true, place:0, healthyimg:"spearman_healthy.png",woundedimg:"spearman_wounded.png",badlywoundedimg:"spearman_badlywounded.png",neardeathimg:"spearman_neardeath.png",deadimg:"spearman_dead.png" },
+	{ name: "sergeant",	room: 1,total: 35, current: 35, attack: 1, accuracy: .3, loot: 4, alive:true, place:0, healthyimg:"sergeant_healthy.png",woundedimg:"sergeant_wounded.png",badlywoundedimg:"sergeant_badlywounded.png",neardeathimg:"sergeant_neardeath.png",deadimg:"sergeant_dead.png"},
+	{ name: "knight", room:5, total:30, current:30, attack:2, accuracy:.15, loot:5, alive:true, place:0, healthyimg:"knight_healthy.png",woundedimg:"knight_wounded.png",badlywoundedimg:"knight_badlywounded.png",neardeathimg:"knight_neardeath.png",deadimg:"knight_dead.png"}
+]
 
 let playerCharacter = {
 	name: "Player",
@@ -6,12 +27,18 @@ let playerCharacter = {
 	weaponValue: undefined,
 	weaponVerb: "",
 	damage: 0,
-	crit: 0,
-	dodge: 0,
-	total: 8,
-	current: 8,
+	critChance: 0,
+	dodgeChance: 0,
+	totalHealth: 8,
+	currentHealth: 8,
 	potions: 2,
 	stance: 0
+}
+
+function reportIntroduction(){
+	$("#combatlog").append(
+		"<span> A stray bolt sends your horse falling to the ground. The poor beast is dead before it lands. You pull yourself free and remove your helmet to get a better view of the battlefield. Banners hang in the wind, torn and defeated. There are no horns or shouts from commanders; no flags to give instruction to either of the armies engaged with each other. It is every commander's worst fear--your own included. It is nothing resembling an organized battle any longer. It has devolved into an unchecked melee. </br> Soldiers die all around you--not good, or evil. Just men born into different lands, wearing different colors, and all just doing their best to make it through another bloodied battle someone else thrust them into. </br> You survey the chaos and look for a weapon to arm yourself with. If you are to survive this day, it means you'll have to make sure some others won't. </br>   </span>"
+	);
 }
 
 function findTarget(space){
@@ -23,7 +50,7 @@ function findTarget(space){
 
 function checkAccuracy(){
 	let i = Math.random();
-	if (i > .5) {
+	if (i >= .4) {
 		return true;
 	} else {
 		return false
@@ -55,6 +82,9 @@ function dealDamageToTarget(target, damage){
 	let returnHealth = (target.total / newHealth) * 100;
 	console.log("Damage: ", damage, " Total:", newHealth);
 	reportHitMessage(returnHealth);
+	//Trigger the return attack after a player deals damage.
+	setTimeout(function() {
+		attackPlayer()}, 1500);
 }
 
 function reportHitMessage(health){
@@ -64,25 +94,21 @@ function reportHitMessage(health){
 	switch(health){
 		case health == 100: 
 			console.log(health);
-			attackPlayer(target);
 			break;
 		case health < 100 && health > 60:
-			$("#combatlog").append("<span class=attacksuccess> You "+verb+" the "+ target.name+". It's wounded!</span><br>");
-			$(m_health).html("<span><input type=image src="+target.woundedimg+" onclick=check("+space+") id=attack_"+space+"></span> </p>");
+			$("#combatlog").append("<span class=attacksuccess> You " + verb + " the "+ target.name + ". It's wounded!</span><br>");
+			$(m_health).html("<span><input type=image src="+ target.woundedimg +" onclick=check(" + space + ") id=attack_" + space + "></span> </p>");
 			console.log(health);
-			attackPlayer(target);
 			break;
 		case health <= 60 && health > 30:
 			console.log(health);
-			$("#combatlog").append("<span class=attacksuccess> You "+verb+" the "+ target.name+". It's badly wounded! </span><br>");
-			$(m_health).html("<span><input type=image src="+target.badlywoundedimg+" onclick=check("+space+") id=attack_"+space+"></span> </p>");
-			attackPlayer(target);
+			$("#combatlog").append("<span class=attacksuccess> You " + verb + " the " + target.name + ". It's badly wounded! </span><br>");
+			$(m_health).html("<span><input type=image src=" + target.badlywoundedimg + " onclick=check(" + space + ") id=attack_" + space + "></span> </p>");
 			break;
 		case health <= 30 && health > 0:
 			console.log(health);
-			$("#combatlog").append("<span class=attacksuccess> You "+verb+" the "+ target.name+". It's near death!</span> <br>");
-			$(m_health).html("<span><input type=image src="+target.neardeathimg+" onclick=check("+space+") id=attack_"+space+"></span> </p>");
-			attackPlayer(target);
+			$("#combatlog").append("<span class=attacksuccess> You " + verb + " the " + target.name + ". It's near death!</span> <br>");
+			$(m_health).html("<span><input type=image src=" + target.neardeathimg + " onclick=check(" + space + ") id=attack_" + space + "></span> </p>");
 			break;
 		default: 
 			console.log("monster is dead");
@@ -90,7 +116,33 @@ function reportHitMessage(health){
 	}
 }
 
-function reportMonsterDeath(){	
+function reportMissMessage(name) {
+	$("#combatlog").append("<span class=attacksuccess> You miss hitting the " + name + ".</span><br>");
+}
+
+function reportIncomingHitMessage(name, damage){
+	$("#combatlog").append("<span class=enemyattacksuccess> The "+ name + " hits you for " + damage + " points of damage.</span><br>");
+}
+
+function setPlayerHealth(damage){
+	playerCharacter.currentHealth = playerCharacter.currentHealth - damage;
+
+	$("#playerhealth").html("");
+	for(i=0; i<playerCharacter.currentHealth; i++){
+		$("#playerhealth").append("<img src='redblock.png' style='margin:1px 1px 1px 1px'>");
+	}
+
+	if (playerCharacter.currentHealth <= 0){
+		processPlayerDeath()
+	}
+}
+
+function processPlayerDeath(){
+	$(':button').prop('disabled',true);
+	$("#combatlog").append("<span class=death> The "+ target.name + " kills you.</span><br>");
+}
+
+function reportMonsterDeath() {	
 	let monster_healthbar = "#monster_" + space;
 	let monsterIdButton= "#attack_" + space;
 	$(':button').prop('disabled',true);
@@ -100,14 +152,16 @@ function reportMonsterDeath(){
 	changeProperty('alive','false');
 }
 
-function processMonsterDeath(){
+function processMonsterDeath(target) {
 	let middiv = "#div" + space;
 
-	score += points;
+	score += target.loot;
 	target.alive = false;
+
 	$("#playerscore").html(score);
 	delete monsters_array[target];			
 	monsters_count -= 1;
+
 	console.log("Before:", monsters_array);
 	let remove = monsters_array.filter((target) => {
 		return monster.place == space;
@@ -115,17 +169,19 @@ function processMonsterDeath(){
 
 	monsters_array.splice(remove, 1);
 	console.log("After:", monsters_array);
+
 	middiv = "#div"+space;
 	$(middiv).html("");
 	setTimeout(function(){
-		spawn_enemy();		
+		spawnEnemy();		
 		$(':button').prop('disabled',false);	
 		$(':image').prop('disabled',false);						
 	},2000);
+
 };
 
 function check(space){
-	var points = target.loot;
+	let target = findTarget(space);
 	console.log("mid-button",midbut);
 
 	if (checkAccuracy()) {
@@ -135,86 +191,48 @@ function check(space){
 
 		dealDamageToTarget(target, damage);
 		attackPlayer();
-
-		//MONSTER IS DEAD -- DO CHECKS
-			
-			
-		
-			
-	} else {
-//WE MISSED IT
-		$("#combatlog").append("<span class=attacksuccess> You miss hitting the " + target.name + ".</span><br>");
+		} else {
+		reportMissMessage(target.name);
+			//WE MISSED IT
 		console.log("THATS A MISS");
 	}
-
 	//DISABLE BUTTONS AT THE END OF THE ATTACK
 	$(':button').prop('disabled',true);
 	$(':image').prop('disabled',true);
 	updateScroll();
-
 }
 
-		
 // PLAYER TAKES DAMAGE EACH TIME DAMAGE IS GIVEN
 function attackPlayer(target){
-	
-	var hitpoints = playerCharacter.current;
-	var hit = Math.random();
-	var goal = target.accuracy;
-	
-	console.log("Initiating Attack Function, Hit:",hit," and goal:",goal);;
+	let hitpoints = playerCharacter.currentHealth;
+	console.log("Initiating Attack Function, Hitpoints: ", hitpoints);;
 
 	//IF THE ENEMY SUCCEEDS
-	if (hit < goal){ 
-		var dodgecheck = Math.random();
-	//CHECK AGAINST OUR DODGE
-		//HIT
-		if (playerCharacter.dodge < dodgecheck){
-		//DODGE FAIL -- WE GET HIT
-		$("#combatlog").append("<span class=enemyattacksuccess> The "+ target.name+" hits you.</span><br>");
+	if (Math.random() < target.accuracy){
+		//If we fail to dodge 
+		if (playerCharacter.dodgeChance > Math.random()){
+			let enemyDamage = Math.floor(target.attack * (Math.random() * 3))
+			reportIncomingHitMessage(target.name, enemyDamage);
+			setPlayerHealth(enemyDamage);
 
-			playerCharacter.current -= target.attack;
-			hitpoints -= target.attack;
-		//	console.log("DODGE FAIL");
-			$("#playerhealth").html("");
-			for(i=0; i<hitpoints; i++){
-				$("#playerhealth").append("<img src='redblock.png' style='margin:1px 1px 1px 1px'>");
-			}
-				if (hitpoints <= 0){
-				$(':button').prop('disabled',true);
-				$("#combatlog").append("<span class=death> The "+ target.name + " kills you.</span><br>");
+			playerCharacter.current -= enemyDamage;
 
-				return;
-			}
-	
-			} else {
-				//DODGE SUCCESS	
+		} else {
+		//If we succeed to dodge	
 			$("#combatlog").append("<span class=dodgesuccess> You avoid the blow from the "+ target.name + ".</span><br>");
-	//		console.log("Dodge SUCCESS");
 		}
+	
 	} else {
 		$("#combatlog").append("<span class=dodgesuccess> The "+ target.name + " missed you.</span><br>");
-	//	console.log(target.name + " missed!");
 	}
 	setTimeout(function(){
 		$(':button').prop('disabled',false);	
 		$(':image').prop('disabled',false);
 	}, 1000);
-
 	updateScroll();
-	
 }
 
 // INVENTORY BUILDER AND MANAGEMENT 
-var potioninventory = ['potion', 'potion'];
-
-var inventory = new Array();
-
-$(document).ready(function what() {
-	document.getElementById("inventory").innerHTML = inventory.toString();
-});
-
-// POTION DRINKING
 function potionuse(){
 	var now = playerCharacter.current;
 	var max = playerCharacter.total;
@@ -235,11 +253,6 @@ function potionuse(){
 	} else {
 	}
 }
-function potion_count(){
-	var count = potioninventory.find(function(potion){
-	});
-}
-// LOOT -- NOW BEING USED TO KEEP TRACK OF POINTS
 function loot(target){
 	var loot_target = monsters_array[target];
 	var loot_button = "lootybutton"+target;
@@ -268,15 +281,11 @@ function select_weapon(r){
 	document.getElementById("weaponselection").style.display = "none";
 };
 
-function set_weapon(n){
-
-
-}
 // WE GOTTA START THAT ROOM
 function roomstart(){
 	$(':button').prop('disabled',true);
 	$(':image').prop('disabled',true);
-	spawn_enemy();
+	spawnEnemy();
 
 	document.getElementById("startroom").style.display = "none";
 
@@ -286,69 +295,52 @@ function roomstart(){
 	}, 5000);
 }
 	
-
-//WE GOTTA END THAT ROOM WHEN WE GOT NO MOAR ENEMIES
-
-function roomend(mid){
-	middiv = "#div"+mid;
-	$(middiv).html("");
-}
 //INITIALIZE
 function doPlayer(){
 	$("#playerscore").html(score);
-	var redblocks = playerCharacter.total;
-	for(i=0; i<redblocks; i++){
-			$("#playerhealth").append("<img src='redblock.png' style='margin:1px 1px 1px 1px'>");
-		}
-		stance_draw();
+	for(i=0; i< playerCharacter.totalHealth; i++){
+		$("#playerhealth").append("<img src='redblock.png' style='margin:1px 1px 1px 1px'>");
+	}
+		setStanceButtons();
 	$("#playerbreather").html("<button type=button onclick=breather()> Find a respite </button>")
 }
 
 //ON THE START
 $(document).ready(function() {
 	doPlayer();
-	list_armory();
+	reportIntroduction();
+	setTimeout(function() { 
+	listArmory();}, 5000);
 });
 
-function list_armory(){
-	for (var v in armory){
-		var weapnum = armory[v].value;
-		var weapimg = armory[v].url;
-		//console.log(armory[v].name)
-		$("#weaponselection").append("<input type=image src="+weapimg+" style='margin:5px' onclick=select_weapon("+weapnum+") value="+weapnum+" >");
-	}
+function listArmory(){
+	armory.forEach((e, i) =>  {
+		console.log(i)
+		$("#weaponselection").append("<input type=image src=" + e.url + " style='margin:5px' onclick=select_weapon("+i+") value="+i+" alt="+e.helpText+">");
+	})
 }
 
-function stances(choice,stance){
-	if (choice === 0) {
-		console.log("Stance:default");
-	} else if (choice === 1) {
-		console.log("stance:defensive");
-	} else if (choice === 2) {
-		console.log("stance:offensive");
-	}
-}
-	
 function breather(){
-	var now = playerCharacter.current;
-	var max = playerCharacter.total;
-	var rest = Math.floor(Math.random() * 3);
 	$(':button').prop('disabled',true);	
-		// healing for damage, but only if health now isn't at max
-	
-	if (now < max) {
+
+	if (playerCharacter.currentHealth < playerCharacter.totalHealth) {
+		let rest = Math.ceil(Math.random() * 3);
 		$("#combatlog").append("You step away and take a breather.<br>");
 
-		for(i= 0;i < rest; i++){
-			if (now < max){
-				playerCharacter.current += 1;
-				now = now += 1;
+		for(i=0; i<rest; i++){
+			if (playerCharacter.currentHealth < playerCharacter.totalHealth){
+				playerCharacter.currentHealth += 1;
 				$("#playerhealth").append("<img src='redblock.png' style='margin:1px 1px 1px 1px'>");
 				console.log("rest " + rest)
 			} else {
+				$("#combatlog").append("You catch your second wind. <br>");
 				console.log("health full");
 			}
 		}
+
+		let attackernumber = Math.floor(Math.random() * 3);	
+		let attacker = monsters_array[attackernumber]; 
+
 		setTimeout(function(){
 			attackPlayer(attacker); 
 			$(':button').prop('disabled',false);	
@@ -357,164 +349,87 @@ function breather(){
 		$("#combatlog").append("You do not need to catch your breath. <br>");
 		$(':button').prop('disabled',false);	
 	}
-
-	 var attackernumber = Math.floor(Math.random() * 3);	
-	 var attacker = monsters_array[attackernumber];
-	
-
 }
 
-function spawn_enemy(){
-	ns = Math.floor(Math.random() * 5);
-	var new_spawn = Object.create(monsters_list[ns]);
-	var html = '';
-	var thispar = "m" + place;	
-	new_spawn.place = place;
-	if (ns == 0){
+function spawnEnemy(){
+	let monsterIndex = Math.floor(Math.random() * 5);
+	let newSpawn = Object.create(monstersList[monsterIndex]);
+	monsterIndex.place = place;
+	checkNumberOfEnemies();
+	updateScroll();
+	reportMonsterSpawn(monsterIndex, newSpawn);
+}
+
+function reportMonsterSpawn(monsterIndex, newSpawn){
+	if (monsterIndex == 0){
 		var a = "An";
 	} else {
 		var a = "A";
 	}
-	html += "<p id=monster_"+place+" > <span><input type=image disabled=true src="+new_spawn.healthyimg+" onclick=check("+place+") id=attack_"+place+"></span> </p>" ;
-	html += '<p id='+thispar+'>'+ '</p>';
-	$("#combatlog").append("<span class=enemyspawn>"+ a + " " + new_spawn.name + " approaches you.</span><br>");
+	let html = ""
+	let thispar = "m" + place;	
+	html += "<p id=monster_"+place+" > <span><input type=image disabled=true src="+ newSpawn.healthyimg + " onclick=check(" + place + ") id=attack_" + place + "></span> </p>" ;
+	html += '<p id=' + thispar +'>'+ '</p>';
+	$("#combatlog").append("<span class=enemyspawn>"+ a + " " + newSpawn.name + " approaches you.</span><br>");
 	$("#monstersbox").append('<div class=monsterholder id="div'+ place +'">' + html + "</div>");
-	monsters_array.push(new_spawn); 
+	monsters_array.push(newSpawn); 
 	monsters_count += 1;
 	place += 1;
-	check_enemies();
-	updateScroll();
 }
 
-function check_enemies(){
+function checkNumberOfEnemies(){
 	if (monsters_count < 3){
 		setTimeout(function(){
-			spawn_enemy();	
+			spawnEnemy();	
 		}, 1500);
 	}
 }
 
-
-function stance_draw(){
-	for(i=1;i<stances.length;i++){
+function setStanceButtons(){
+	for(i=0;i<stances.length;i++){
 		var html = '';
-		var x = playerCharacter.stance;
 		html += "<button onclick=stance_set("+i+") id=stance"+i+">" + stances[i].name + "</button>"
 		$("#stanceselect").append(html);
 		}
 }
-
-function opening_choices(one,two,three){
-	
-	var dodgeincrease;
-	var totalincrease;
-	var critincrease;
-	var damageincrease;
-
-	switch(one){
-		case 0:
-			dodgeincrease += .1;
-			break;
-		case 1:
-			totalincrease += 1;
-			break;
-		case 2:
-			critincrease += .1;
-			break;
-		default:
-			break;
-	}
-	switch(two){
-		case 0:
-			dodgeincrease += .1;
-			break;
-		case 1:
-			totalincrease += 1;
-			break;
-		case 2:
-			critincrease += .1;
-			break;
-		default:
-			break;
-	}
-	switch(three){
-		case 0:
-			damageincrease += 1;
-			break;
-		case 1:
-			dodgeincrease += .1;
-			break;
-		default:
-			break;
-		}
-
-	playerCharacter.dodge += dodgeincrease;
-	playerCharacter.total += totalincrease;
-	playerCharacter.crit += critincrease;
-	playerCharacter.damage += damageincrease;	
-}
-
 function stance_set(next){
-	
-	if (playerCharacter.stance === next){
+	if (playerCharacter.stance == next){
 			return;
 	}
-	
-	var old = playerCharacter.stance
-	
-		// REMOVE OLD STANCE MODIFIERS
-		switch (old){
-	case 1:
-		
-		console.log("leaving defensive stance");
-		playerCharacter.dodge -= stances[1].dodge;
-		playerCharacter.crit -= stances[1].crit;
-		break;
-	case 2:
-		
-		console.log("leaving offensive stance");
-		playerCharacter.dodge -= stances[2].dodge;
-		playerCharacter.crit -= stances[2].crit;
-		break;
-	case 3: 
-
-		console.log("leaving reckless stance");
-		playerCharacter.dodge -= stances[3].dodge;
-		playerCharacter.crit -= stances[3].crit;
-		break;
-	default:	
-		console.log("cannot leave old stance");
-	}
-
-	//ADD NEW STANCE
 	switch (next){
+	case 0:
+		$("#playerstance").html("Steady");
+		$("#combatlog").append("<span> You lean back and set your feet into a defensive stance.</span><br>");
+		playerCharacter.dodgeChance = stances[1].dodge;
+		playerCharacter.critChance = stances[1].crit;
+		playerCharacter.stance = 1;
 	case 1:
 		$("#playerstance").html("Defensive");
-		console.log("defensive stance activated");
-	//	playerCharacter.dodge += stances[1].dodge;
-	//	playerCharacter.crit += stances[1].crit;
+		$("#combatlog").append("<span> You lean back and set your feet into a defensive stance.</span><br>");
+		playerCharacter.dodgeChance = stances[1].dodge;
+		playerCharacter.critChance = stances[1].crit;
 		playerCharacter.stance = 1;
 		break;
 	case 2:
 		$("#playerstance").html("Offensive");
-		console.log("Offensive stance activated");
-//		playerCharacter.dodge += stances[2].dodge;
-//		playerCharacter.crit += stances[2].crit;
+		$("#combatlog").append("<span> You set one foot backwards, readying to strike.</span><br>");
+		playerCharacter.dodgeChance = stances[2].dodge;
+		playerCharacter.critChance = stances[2].crit;
 		playerCharacter.stance = 2;
 		break;
 	case 3: 
 		$("#playerstance").html("Reckless");
-		console.log("reckless stance activated");
-//		playerCharacter.dodge += stances[3].dodge;
-//		playerCharacter.crit += stances[3].crit;
+		$("#combatlog").append("<span> You spread your feet and prepare to leap into the fray.</span><br>");
+		playerCharacter.dodgeChance = stances[3].dodge;
+		playerCharacter.critChance = stances[3].crit;
 		playerCharacter.stance = 3;
 		break;
-	default:	
-		console.log("no stance chosen");
-	}
+		default:	
+}
 
-	$("#playercrit").html(playerCharacter.crit);
-	$("#playerdodge").html(playerCharacter.dodge);
+	updateScroll();
+	$("#playercrit").html(playerCharacter.critChance * 100);
+	$("#playerdodge").html(playerCharacter.dodgeChance * 100);
 
 }
 
