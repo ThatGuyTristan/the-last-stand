@@ -4,7 +4,7 @@
 
 #main{
 	width:800px;
-	height:600px;
+	height:900px;
 	position:center;
 	margin-right:25%;
 	margin-left:25%;
@@ -45,8 +45,7 @@ float:left;
 
 #combatlog{
 	width:450px;
-	height:145px;
-	margin-top: 155px;
+	height:300px;
 	border: 1px black solid;
 	position:fixed;
 	overflow:auto;

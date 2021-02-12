@@ -1,4 +1,4 @@
-let crit, dmg, room = 1, score = 0, monsters_array = [], monsters_count = 0, place = 1;
+let crit, dmg, score = 0, monsters_array = [], monsters_count = 0, place = 0;
 
 const armory = [
 	{ name:"Greatsword", verb:"slash", missverb:"swing", url: "images/greatsword.png", value: 0, damage: 7, crit: .3, helptext: "High damage, low critical"},
@@ -14,19 +14,23 @@ const stances = [
 ]
 
 var monstersList = [
-	{ name: "archer", room: 1, total: 10, current: 10, attack: 1, accuracy: .3, loot: 1, alive:true, place:0,healthyimg:"archer_healthy.png",woundedimg:"archer_wounded.png",badlywoundedimg:"archer_badlywounded.png",neardeathimg:"archer_neardeath.png",deadimg:"archer_dead.png" },
-	{ name: "swordsman", room: 2, total: 20, current: 20, attack:1,accuracy:.4, loot: 2, alive:true, place:0,healthyimg:"swordsman_healthy.png",woundedimg:"swordsman_wounded.png",badlywoundedimg:"swordsman_badlywounded.png",neardeathimg:"swordsman_neardeath.png",deadimg:"swordsman_dead.png"  },
-	{ name: "spearman",	room: 1, total: 25,	current: 25, attack: 1,	accuracy: .3,loot: 3, alive:true, place:0, healthyimg:"spearman_healthy.png",woundedimg:"spearman_wounded.png",badlywoundedimg:"spearman_badlywounded.png",neardeathimg:"spearman_neardeath.png",deadimg:"spearman_dead.png" },
-	{ name: "sergeant",	room: 1,total: 35, current: 35, attack: 1, accuracy: .3, loot: 4, alive:true, place:0, healthyimg:"sergeant_healthy.png",woundedimg:"sergeant_wounded.png",badlywoundedimg:"sergeant_badlywounded.png",neardeathimg:"sergeant_neardeath.png",deadimg:"sergeant_dead.png"},
-	{ name: "knight", room:5, total:30, current:30, attack:2, accuracy:.15, loot:5, alive:true, place:0, healthyimg:"knight_healthy.png",woundedimg:"knight_wounded.png",badlywoundedimg:"knight_badlywounded.png",neardeathimg:"knight_neardeath.png",deadimg:"knight_dead.png"}
+	{ name: "archer", room: 1, total: 10, current: 10, attack: 1, accuracy: .3, loot: 1, alive:true, id: undefined,healthyimg:"archer_healthy.png",woundedimg:"archer_wounded.png",badlywoundedimg:"archer_badlywounded.png",neardeathimg:"archer_neardeath.png",deadimg:"archer_dead.png" },
+	{ name: "swordsman", room: 2, total: 20, current: 20, attack:1,accuracy:.4, loot: 2, alive:true, id: undefined,healthyimg:"swordsman_healthy.png",woundedimg:"swordsman_wounded.png",badlywoundedimg:"swordsman_badlywounded.png",neardeathimg:"swordsman_neardeath.png",deadimg:"swordsman_dead.png"  },
+	{ name: "spearman",	room: 1, total: 25,	current: 25, attack: 1,	accuracy: .3,loot: 3, alive:true, id:undefined, healthyimg:"spearman_healthy.png",woundedimg:"spearman_wounded.png",badlywoundedimg:"spearman_badlywounded.png",neardeathimg:"spearman_neardeath.png",deadimg:"spearman_dead.png" },
+	{ name: "sergeant",	room: 1,total: 35, current: 35, attack: 1, accuracy: .3, loot: 4, alive:true, id:undefined, healthyimg:"sergeant_healthy.png",woundedimg:"sergeant_wounded.png",badlywoundedimg:"sergeant_badlywounded.png",neardeathimg:"sergeant_neardeath.png",deadimg:"sergeant_dead.png"},
+	{ name: "knight", room:5, total:30, current:30, attack:2, accuracy:.15, loot:5, alive:true, id:undefined, healthyimg:"knight_healthy.png",woundedimg:"knight_wounded.png",badlywoundedimg:"knight_badlywounded.png",neardeathimg:"knight_neardeath.png",deadimg:"knight_dead.png"}
 ]
 
 let playerCharacter = {
 	name: "Player",
-	weapon: "",
+	weapon: {
+		crit: 0,
+		damage: 0,
+		verb: null
+	},
 	weaponValue: undefined,
 	weaponVerb: "",
-	damage: 0,
+	weaponDamage: 0,
 	critChance: 0,
 	dodgeChance: 0,
 	totalHealth: 8,
@@ -41,9 +45,9 @@ function reportIntroduction(){
 	);
 }
 
-function findTarget(space){
+function findTarget(id){
 	let target = monsters_array.filter((monster) => {
-		return monster.place == space;
+		return monster.id == id;
 	});
 	return target
 }
@@ -66,28 +70,30 @@ function checkCriticalHit(){
 	}
 };
 
-function findDamageToTarget(weapon, criticalHit){
+function findDamageToTarget(weaponDamage, criticalHit){
 	//Find the damage
-	let damage = Math.round(armory[weapon].damage * (Math.random() * 10))
+	let damage = Math.round(weaponDamage * (Math.random() * 10))
 	//Multiply if critical
 	return criticalHit ? damage * 2 : damage; 
 }
 
 function dealDamageToTarget(target, damage){
 	//Find the new health after dealing damage
+	console.log("TARRRRRGET", target);
 	let newHealth = target.total - damage;
 	//Set the new health 
 	target.total = newHealth;
 	//Find the % to send to the next function 
 	let returnHealth = (target.total / newHealth) * 100;
 	console.log("Damage: ", damage, " Total:", newHealth);
-	reportHitMessage(returnHealth);
+	reportHitMessage(returnHealth, target);
 	//Trigger the return attack after a player deals damage.
 	setTimeout(function() {
-		attackPlayer()}, 1500);
+		attackPlayer(target)}, 1500);
 }
 
-function reportHitMessage(health){
+function reportHitMessage(health, target){
+	console.log(target, "ERARE")
 	let total = target.total
 	let current = target.current;
 
@@ -112,7 +118,7 @@ function reportHitMessage(health){
 			break;
 		default: 
 			console.log("monster is dead");
-			reportMonsterDeath(); 
+			reportMonsterDeath(space, target); 
 	}
 }
 
@@ -142,7 +148,7 @@ function processPlayerDeath(){
 	$("#combatlog").append("<span class=death> The "+ target.name + " kills you.</span><br>");
 }
 
-function reportMonsterDeath() {	
+function reportMonsterDeath(space, target) {	
 	let monster_healthbar = "#monster_" + space;
 	let monsterIdButton= "#attack_" + space;
 	$(':button').prop('disabled',true);
@@ -153,6 +159,7 @@ function reportMonsterDeath() {
 }
 
 function processMonsterDeath(target) {
+	console.log("PMD", target);
 	let middiv = "#div" + space;
 
 	score += target.loot;
@@ -181,18 +188,19 @@ function processMonsterDeath(target) {
 };
 
 function check(space){
+	console.log("SPACE", space);
 	let target = findTarget(space);
-	console.log("mid-button",midbut);
 
 	if (checkAccuracy()) {
 		console.log("ITS A HIT!");
 		let critical = (checkCriticalHit() < crit) 
-		let damage = findDamageToTarget(weapon, critical);
+		let damage = findDamageToTarget(playerCharacter.weapon.damage, critical);
 
 		dealDamageToTarget(target, damage);
-		attackPlayer();
+		attackPlayer(target);
 		} else {
 		reportMissMessage(target.name);
+		attackPlayer(target);
 			//WE MISSED IT
 		console.log("THATS A MISS");
 	}
@@ -204,6 +212,7 @@ function check(space){
 
 // PLAYER TAKES DAMAGE EACH TIME DAMAGE IS GIVEN
 function attackPlayer(target){
+	console.log("TARGET", target);
 	let hitpoints = playerCharacter.currentHealth;
 	console.log("Initiating Attack Function, Hitpoints: ", hitpoints);;
 
@@ -232,27 +241,6 @@ function attackPlayer(target){
 	updateScroll();
 }
 
-// INVENTORY BUILDER AND MANAGEMENT 
-function potionuse(){
-	var now = playerCharacter.current;
-	var max = playerCharacter.total;
-	var count = playerCharacter.potions;
-
-// if potion in inventory	
-	if (playerCharacter.potions > 0) {
-		// healing for 2 points of damage, but only if health now isn't at max
-		for(i=0;i<4;i++){
-			if (now < max){
-				playerCharacter.current += 1;
-				now = now += 1;
-				$("#playerhealth").append("<img src='redblock.png' style='margin:1px 1px 1px 1px'>");
-			} else {
-			}
-		}
-		playerCharacter.potions -= 1;
-	} else {
-	}
-}
 function loot(target){
 	var loot_target = monsters_array[target];
 	var loot_button = "lootybutton"+target;
@@ -273,12 +261,12 @@ function changeProperty(value,property){
 }
 // WEAPON SELECTION AND DAMAGE 
 function select_weapon(r){
+	console.log("R", r);
 	let weaponname = armory[r].name;
+	playerCharacter.weapon = armory[r]
 	$("#playerweapon").append(weaponname);
-	playerCharacter.weaponvalue = r;
-	playerCharacter.weaponverb = armory[r].verb;
-	document.getElementById("startroom").disabled = false;
 	document.getElementById("weaponselection").style.display = "none";
+	roomstart();
 };
 
 // WE GOTTA START THAT ROOM
@@ -301,7 +289,7 @@ function doPlayer(){
 	for(i=0; i< playerCharacter.totalHealth; i++){
 		$("#playerhealth").append("<img src='redblock.png' style='margin:1px 1px 1px 1px'>");
 	}
-		setStanceButtons();
+	setStanceButtons();
 	$("#playerbreather").html("<button type=button onclick=breather()> Find a respite </button>")
 }
 
@@ -310,13 +298,13 @@ $(document).ready(function() {
 	doPlayer();
 	reportIntroduction();
 	setTimeout(function() { 
-	listArmory();}, 5000);
+	listArmory(), updateScroll() ;}, 5000);
 });
 
 function listArmory(){
 	armory.forEach((e, i) =>  {
 		console.log(i)
-		$("#weaponselection").append("<input type=image src=" + e.url + " style='margin:5px' onclick=select_weapon("+i+") value="+i+" alt="+e.helpText+">");
+		$("#weaponselection").append("<input type=image src=" + e.url + " style='margin:5px' onclick=select_weapon("+i+") alt="+e.helpText+">");
 	})
 }
 
@@ -353,28 +341,32 @@ function breather(){
 
 function spawnEnemy(){
 	let monsterIndex = Math.floor(Math.random() * 5);
-	let newSpawn = Object.create(monstersList[monsterIndex]);
-	monsterIndex.place = place;
+	let newSpawn = {}
+	newSpawn = Object.assign(monstersList[monsterIndex], newSpawn);
+	Object.defineProperty(newSpawn, 'id', {
+		value: monsters_count,
+		writable: false
+	  });
+	monsters_count ++;
 	checkNumberOfEnemies();
-	updateScroll();
 	reportMonsterSpawn(monsterIndex, newSpawn);
+	updateScroll();
 }
 
 function reportMonsterSpawn(monsterIndex, newSpawn){
+	console.log("HELLO,", monsterIndex, newSpawn);
 	if (monsterIndex == 0){
 		var a = "An";
 	} else {
 		var a = "A";
 	}
 	let html = ""
-	let thispar = "m" + place;	
-	html += "<p id=monster_"+place+" > <span><input type=image disabled=true src="+ newSpawn.healthyimg + " onclick=check(" + place + ") id=attack_" + place + "></span> </p>" ;
+	let thispar = "m" + newSpawn.id;	
+	html += "<p id=monster_"+place+" > <span><input type=image disabled=true src="+ newSpawn.healthyimg + " onclick=check(" + newSpawn.id + ") id=attack_" + newSpawn.id + "></span> </p>" ;
 	html += '<p id=' + thispar +'>'+ '</p>';
 	$("#combatlog").append("<span class=enemyspawn>"+ a + " " + newSpawn.name + " approaches you.</span><br>");
-	$("#monstersbox").append('<div class=monsterholder id="div'+ place +'">' + html + "</div>");
+	$("#monstersbox").append('<div class=monsterholder id="div'+ newSpawn.id +'">' + html + "</div>");
 	monsters_array.push(newSpawn); 
-	monsters_count += 1;
-	place += 1;
 }
 
 function checkNumberOfEnemies(){
