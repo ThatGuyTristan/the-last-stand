@@ -1,5 +1,8 @@
 #whole{
 	width: 100%;
+	background-image: url("https://www.transparenttextures.com/patterns/light-aluminum.png");
+	background-color: black;
+	border-radius: 30px;
 }
 
 #main{
@@ -8,34 +11,55 @@
 	position:center;
 	margin-right:25%;
 	margin-left:25%;
+	background-image: url("https://www.transparenttextures.com/patterns/light-aluminum.png");
+	background-color: tan;
 	/* border: black 1px dotted;
 		*/
 }
 
-button{
-	border:none;
+#playerbox{
+	background-color: #2b4525;
+	background-image: url("https://www.transparenttextures.com/patterns/light-aluminum.png");
+	border:grey 3px solid; 
+	border-style:inset;
+	width:150px;
+	height:300px;
+	margin:10px 10px 10px 10px ;
+	position:fixed;
+float:left;
 }
 
-#playerbox{
-background-color: transparent;
-border:grey 3px solid; 
-border-style:inset;
-width:150px;
-height:300px;
-margin:10px 10px 10px 10px ;
-position:fixed;
-float:left;
+#stanceBanner{
+	color: purple;
+	text-decoration: underline;
+	font-weight: bold;
+	text-align: center;
+}
+
+#stanceButton{
+	border-radius: 4px;
+	background-color: darkslategray;
+	border: none;
+	color: white;
+	padding: 20px;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	font-size: 16px;
+	margin: auto;
+	cursor: pointer;
 }
 
 #centerbox{
-background-color: grey;
-border:black 3px solid; 
-border-style:inset;
-width:450px;
-height:300px;
-margin:10px 10px 10px 170px ;
-position:fixed;
-float:left;
+	background-image: url("https://www.transparenttextures.com/patterns/light-aluminum.png");
+	background-color: grey;
+	border:black 3px solid; 
+	border-style:inset;
+	width:450px;
+	height:300px;
+	margin:10px 10px 10px 170px ;
+	position:fixed;
+	float:left;
 }
 
 #weaponselection{
@@ -52,8 +76,9 @@ float:left;
 }
 
 #monstersbox{
+background-image: url("https://www.transparenttextures.com/patterns/light-aluminum.png");
 color:red;
-background-color: transparent;
+background-color: maroon;
 border:grey 3px solid; 
 border-style:outset;
 width:150px;
@@ -78,10 +103,18 @@ position:fixed;
 margin:330px 10px 100px 10px;
 }
 
-.enemyattacksuccess{
+.incominghit {
 	color:red;
 }
 
+.hit{ 
+	color: orange;
+}
+
+criticalHit{
+	color: yellow;
+	font-weight: bold;
+}
 
 .death{
 	font-weight:bold;
