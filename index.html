@@ -10,12 +10,11 @@
     <div id=whole>
         <div id="main"> 
             <div id="playerbox">
-                <p> Score:  <span id="playerscore"> </span> </p>
                 <p> Health: <span id="playerhealth"> </span> </p>
                 <p> Critical %: <span id="playercrit">  </span> </p>
                 <p> Dodge %:<span id="playerdodge"></span></p>
                 <p> Weapon: <span id="playerweapon"> </span> </p>
-                <p> Stance: <span id="playerstance"></span></p>
+                <p id="stanceBanner"> Current Stance: </span> <span id="playerstance"> Steady </span></p>
                 <div id="playerbuttons">
                     <p id="stanceselect"> </p>
                     <p> <span id="playerbreather"></span></p>
@@ -24,10 +23,7 @@
             <div class="wrapper scrollbar-dynamic" id="centerbox">
                 <div id="weaponselection"></div>
                 <div id="topcenterbox"></div>
-                <div id="combatlog">
-                    <p id="topbutton"> 
-                    <button id="startroom" type="button" onclick=roomstart()> Start </button>
-                </div>
+                <div id="combatlog"></div>
             </div>
             <div id="monstersbox">
                 <p class='monsterholder' id="m0"></p>
