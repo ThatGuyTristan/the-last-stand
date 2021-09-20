@@ -1,7 +1,8 @@
 #whole{
 	width: 100%;
-	background-image: url("https://www.transparenttextures.com/patterns/light-aluminum.png");
-	background-color: black;
+	background-image: url("https://images.unsplash.com/photo-1525711857929-4272fb4a040f?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80://www.transparenttextures.com/patterns/light-aluminum.png");
+	background-size: cover;
+	background-repeat: no-repeat;
 	border-radius: 30px;
 }
 
@@ -20,7 +21,7 @@
 #playerbox{
 	background-color: #2b4525;
 	background-image: url("https://www.transparenttextures.com/patterns/light-aluminum.png");
-	border:grey 3px solid; 
+	border:grey 3px solid;
 	border-style:inset;
 	width:150px;
 	height:300px;
@@ -31,7 +32,6 @@ float:left;
 
 #stanceBanner{
 	color: purple;
-	text-decoration: underline;
 	font-weight: bold;
 	text-align: center;
 }
@@ -53,18 +53,23 @@ float:left;
 #centerbox{
 	background-image: url("https://www.transparenttextures.com/patterns/light-aluminum.png");
 	background-color: grey;
-	border:black 3px solid; 
+	border:black 3px solid;
 	border-style:inset;
 	width:450px;
 	height:300px;
 	margin:10px 10px 10px 170px ;
 	position:fixed;
-	float:left;
+	float:center;
 }
 
 #weaponselection{
-	margin:10px 45px 0px 45px;
-	float:center;
+	display: block;
+	position:fixed;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 320px;
+	width: 50%;
+	text-align:center;
 }
 
 #combatlog{
@@ -79,7 +84,7 @@ float:left;
 background-image: url("https://www.transparenttextures.com/patterns/light-aluminum.png");
 color:red;
 background-color: maroon;
-border:grey 3px solid; 
+border:grey 3px solid;
 border-style:outset;
 width:150px;
 height:300px;
@@ -95,7 +100,7 @@ padding-left:35px;
 #lowerbox{
 color:red;
 background-color: transparent;
-border:black 3px dashed; 
+border:black 3px dashed;
 border-style:outset;
 width: 780px;
 height: 200px;
@@ -107,7 +112,7 @@ margin:330px 10px 100px 10px;
 	color:red;
 }
 
-.hit{ 
+.hit{
 	color: orange;
 }
 

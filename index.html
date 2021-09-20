@@ -2,41 +2,41 @@
 <html lang=en>
 <head>
     <script src="jquery-3.3.1.min.js"></script>
-    <script src="workings.js"></script>
+    <script src="index.js"></script>
     <link rel="stylesheet" type="text/css" href="style.css">
     <audio autoplay loop><source src="backgroundmusic.mp3"> </audio>
 </head>
 <body>
     <div id=whole>
-        <div id="main"> 
+        <div id="main">
             <div id="playerbox">
-                <p> Health: <span id="playerhealth"> </span> </p>
-                <p> Critical %: <span id="playercrit">  </span> </p>
-                <p> Dodge %:<span id="playerdodge"></span></p>
-                <p> Weapon: <span id="playerweapon"> </span> </p>
+                <table>
+                  <tr>
+                    <td> Health: </td>
+                    <td> <span id="playerhealth"> </span> </td>
+                  <tr>
+                    <td> Critical</td>
+                    <td> <span id="playercrit">  </span> </td>
+                  </tr>
+                  <tr>
+                    <td> <p> Dodge</td>
+                    <td> <span id="playerdodge"></span> </td>
+                  </tr>
+                </table>
+              <p> Weapon: <span id="playerweapon"> </span> </p>
                 <p id="stanceBanner"> Current Stance: </span> <span id="playerstance"> Steady </span></p>
                 <div id="playerbuttons">
                     <p id="stanceselect"> </p>
                     <p> <span id="playerbreather"></span></p>
                 </div>
             </div>
-            <div class="wrapper scrollbar-dynamic" id="centerbox">
-                <div id="weaponselection"></div>
+            <div id="centerbox">
                 <div id="topcenterbox"></div>
                 <div id="combatlog"></div>
             </div>
             <div id="monstersbox">
-                <p class='monsterholder' id="m0"></p>
-                <p class='monsterholder' id="m1"></p>
-                <p class='monsterholder' id="m2"></p>
             </div>
-            <div id="here">
-                <p id="buttonrow"> </p>
-            </div>
-
-            <div id="inventorydiv">
-                <p><span id="inventory"></span> </p>
-            </div>
+            <div id="weaponselection"></div>
         </div>
     </div>
 </body>
